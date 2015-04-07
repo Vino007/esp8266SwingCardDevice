@@ -4,13 +4,31 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/connect_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="connect"/>
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       >
+       <EditText
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:layout_weight="3"
+           android:hint="192.168.4.1"
+           />
+       <EditText
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:hint="8080"
+           />
+       <Button
+           android:id="@+id/connect_btn"
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:layout_weight="2"
+           android:text="connect"/>
+       </LinearLayout>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -19,25 +37,30 @@
         <EditText
             android:id="@+id/send_data_textview"
             android:hint="输入要发送的数据"
-            android:layout_weight="3"
+            android:layout_weight="4"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/send_btn"
             android:text="send"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
     <TextView
         android:id="@+id/status_textview"
-        android:text="发送状态"
+        android:text="接收到的数据:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
         android:id="@+id/receive_data_textview"
-        android:text="接收的数据"
+        android:text="无"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
+</LinearLayout>
 </LinearLayout>

@@ -15,6 +15,10 @@ import java.net.Socket;
  */
 public class SocketClient {
     private Socket client=null;
+    OutputStream os=null;
+    PrintWriter out=null;
+    InputStream is=null;
+    BufferedReader in=null;
     public SocketClient(String host,int port)  throws RuntimeException{
         try {
             client=new Socket(host,port);//这种构造器会一直阻塞到直到连上服务器
@@ -34,18 +38,15 @@ public class SocketClient {
      * @return
      */
     public String sendMessage(String msg)  {
-        OutputStream os=null;
-        PrintWriter out=null;
-        InputStream is=null;
-        BufferedReader in=null;
+
         try{
             os=client.getOutputStream();
-            out=new PrintWriter(os,true);
+            out=new PrintWriter(os,true);//自动flush
             is=client.getInputStream();
             in=new BufferedReader(new InputStreamReader(is));
             out.println(msg);
 
-            return in.readLine();//读取响应的字符串
+            return in.readLine();//阻塞直到读取到换行，读取响应的字符串
            /* if(in.hasNext()) {
                 String str=in.next();
                 Log.e("receive","receive");
@@ -56,8 +57,10 @@ public class SocketClient {
             e.printStackTrace();
             Log.e("sendMessageError","sendMessageError");
         }finally {
-
-            if(out!=null)
+          /*
+          *调用close来进行关闭，使得达到长连接的效果
+          * */
+           /* if(out!=null)
                 out.close();
             if(os!=null)
                 try {
@@ -77,10 +80,18 @@ public class SocketClient {
                     is.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*/
         }
        // return in.hasNext()?in.nextLine():"";
         return "";
+    }
+
+    public void close(){
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
