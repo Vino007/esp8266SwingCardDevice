@@ -8,24 +8,40 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.vino.utils.ReadParameterSetting;
+import com.example.vino.utils.SwingCardSetting;
+import com.example.vino.utils.TimedialogUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
     private Button send_btn;
     private Button connect_btn;
+    private Button setBeginTime_btn;
+    private Button setEndTime_btn;
+    private Button readParameter_btn;
+    private RadioGroup selectMode_group;
+    private Button setMode_btn;
+    private Button setDate_btn;
+    private Button setTime_btn;
     private EditText send_data_textview;
     private Handler handler;
     private MyThread myThread;//短连接使用的线程
     private TextView receive_data_textview;
-    private boolean connectStatus=false;
 
+    private boolean connectStatus=false;
+    private List<Integer> message=new ArrayList<Integer>();//报文存储
+    private int workMode=-1;//工作模式
     private SocketClient client=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +49,122 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         send_btn= (Button) findViewById(R.id.send_btn);
         connect_btn= (Button) findViewById(R.id.connect_btn);
+        setBeginTime_btn= (Button) findViewById(R.id.setBeginTime_btn);
+        setEndTime_btn=(Button)findViewById(R.id.setEndTime_btn);
+        setMode_btn= (Button) findViewById(R.id.setMode_btn);
+        setDate_btn= (Button) findViewById(R.id.setDate_btn);
+        setTime_btn= (Button) findViewById(R.id.setTime_btn);
+        readParameter_btn= (Button) findViewById(R.id.readParameter_btn);
+        selectMode_group= (RadioGroup) findViewById(R.id.selectMode_group);
         send_data_textview= (EditText) findViewById(R.id.send_data_textview);
         receive_data_textview= (TextView) findViewById(R.id.receive_data_textview);
         Log.d("start","正常启动");
         handler=new MyHandler();
+        //初始化报文
+        for(int i=0;i<9;i++)
+            message.add(0x00);
+
+
+  /******************************监听器************************************/
+        readParameter_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ReadParameterSetting readParameterSetting=new ReadParameterSetting(message);
+                message=readParameterSetting.readAll();
+                ReadMessageThread readMessageThread=new ReadMessageThread();
+                Thread mythread=new Thread(readMessageThread);
+                mythread.start();
+
+            }
+        });
+
+
+        setTime_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimedialogUtils timedialogUtils=new TimedialogUtils(MainActivity.this,message);
+                message= timedialogUtils.showTimepickerDialog("deviceTime");
+            }
+        });
+
+        setDate_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            TimedialogUtils timedialogUtils=new TimedialogUtils(MainActivity.this,message);
+                message=timedialogUtils.showDatepickerDialog();
+            }
+        });
+
+        setBeginTime_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimedialogUtils timedialogUtils=new TimedialogUtils(MainActivity.this,message);
+                message= timedialogUtils.showTimepickerDialog("beginTime");
+
+
+            }
+        });
+
+        setEndTime_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimedialogUtils timedialogUtils=new TimedialogUtils(MainActivity.this,message);
+                message= timedialogUtils.showTimepickerDialog("endTime");
+            }
+        });
+
+
+        setMode_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int selectId = selectMode_group.getCheckedRadioButtonId();
+                Log.i("selectId",selectId+"");
+                switch (selectId) {
+                    case R.id.mode1_rbtn:
+                        workMode = 1;break;
+                    case R.id.mode2_rbtn:
+                        workMode = 2;break;
+                    case R.id.mode3_rbtn:
+                        workMode = 3;break;
+                    case R.id.mode4_rbtn:
+                        workMode = 4;break;
+                    default:
+                        workMode = -1;
+                }
+                Log.i("workMode",workMode+"");
+                if(workMode!=-1) {
+                    SwingCardSetting swingCardSetting = new SwingCardSetting(message);
+                    message = swingCardSetting.setMode(workMode);
+                }
+
+            }
+        });
+
+        connect_btn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(true) {
+                    if (!connectStatus) {
+                        ConnectThread connectThread = new ConnectThread();
+                        Thread thread = new Thread(connectThread);
+                        thread.start();
+                    } else {
+                        client.close();
+                        connectStatus = false;
+                        connect_btn.setText("connect");
+                    }
+                }else
+                    Toast.makeText(MainActivity.this,"请先连接对应的wifi",Toast.LENGTH_SHORT).show();
+            }
+        });
 
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               Log.i("message", Arrays.toString(message.toArray()));
+
                 /********************短连接********************/
                 /**
                  * 0.使用send按钮进行建立连接以及发送数据
@@ -67,34 +191,13 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-
-        connect_btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(isWifiConnect()) {
-                    if (!connectStatus) {
-                        ConnectThread connectThread = new ConnectThread();
-                        Thread thread = new Thread(connectThread);
-                        thread.start();
-
-
-                    } else {
-                        client.close();
-                        connectStatus = false;
-                        connect_btn.setText("connect");
-                    }
-                }else
-                    Toast.makeText(MainActivity.this,"请先连接对应的wifi",Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
     /**
      * 判断是否连接上wifi
      * isConnected 为true表示当前手机有连接上网络
      * iswifi 为true 表示当前手机连接的网络是wifi
+     *
      * @return
      */
     public boolean isWifiConnect(){
@@ -110,7 +213,7 @@ public class MainActivity extends ActionBarActivity {
         }
         return isWifi;
     }
-
+/**********************************handler*********************************************/
     class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -131,7 +234,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
     }
-
+/*********************************线程*********************************************/
     class MyThread implements Runnable{
         @Override
         public void run() {
@@ -167,10 +270,26 @@ public class MainActivity extends ActionBarActivity {
     class SendMessageThread implements  Runnable{
         @Override
         public void run(){
-            String result = client.sendMessage(send_data_textview.getText().toString().trim());
+            String result="";
+         // String result = client.sendMessage(send_data_textview.getText().toString().trim());
+            client.sendMessage(message);//无返回值，不读取模块返回的信息
+
             Message msg = handler.obtainMessage();
             msg.what = 1;
             msg.obj = result;
+
+            handler.sendMessage(msg);
+        }
+
+    }
+    class ReadMessageThread implements  Runnable{
+        @Override
+        public void run(){
+            String result=client.readMessage(message);//无返回值，不读取模块返回的信息
+            Message msg = handler.obtainMessage();
+            msg.what = 1;
+            msg.obj = result;
+
             handler.sendMessage(msg);
         }
 
@@ -178,27 +297,4 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
