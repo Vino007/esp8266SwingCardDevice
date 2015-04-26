@@ -2,6 +2,7 @@ package com.example.vino.esp8266test;
 
 import android.util.Log;
 
+import com.example.vino.utils.CRC16M;
 import com.example.vino.utils.MyUtils;
 
 import java.io.BufferedOutputStream;
@@ -12,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -102,14 +104,47 @@ public class SocketClient {
     }
 
     /**
+     * 下行报文的crc校验
+     * @param msg
+     * @return
+     */
+    public List<Integer>  crc(List<Integer> msg){
+        StringBuilder sb=new StringBuilder();
+        //校验前7位，后两位为crc校验码
+        for(int i=0;i<msg.size()-2;i++){
+            if(msg.get(i)<17)
+                sb.append("0"+Integer.toHexString(msg.get(i)));
+            else
+                sb.append(Integer.toHexString(msg.get(i)));
+        }
+        byte[] sbuf=CRC16M.getSendBuf(sb.toString());
+        String crcResultHexString=CRC16M.getBufHexStr(sbuf);
+        String crcLow=crcResultHexString.charAt(crcResultHexString.length()-2)+""+crcResultHexString.charAt(crcResultHexString.length()-1);
+        String crcHigh=crcResultHexString.charAt(crcResultHexString.length()-4)+""+crcResultHexString.charAt(crcResultHexString.length()-3);
+        Log.i("crc",crcResultHexString);
+        Log.i("crclow",crcLow);
+        Log.i("crchigh",crcHigh);
+        msg.set(msg.size()-2, Integer.parseInt(crcHigh, 16));
+        msg.set(msg.size()-1,Integer.parseInt(crcLow,16));
+        Log.i("下行报文", Arrays.toString(msg.toArray()));
+        return msg;
+
+    }
+
+    public boolean isClose(){
+        return client.isClosed();
+    }
+
+    /**
      * 发送整型数组
      * 每次发送完毕后初始化报文即全部设置为0x00
      * @param msg
      * @return
      */
+
     public void sendMessage(List<Integer> msg) {
 
-
+        msg=crc(msg);//添加crc校验
         try {
             os = client.getOutputStream();
             BufferedOutputStream out=new BufferedOutputStream(os);//不能使用dataoutputStream，由于data传送的是byte类型，byte的范围-127-127,不符合
@@ -143,7 +178,7 @@ public class SocketClient {
      * @return
      */
     public String readMessage(List<Integer> msg) {
-
+        msg=crc(msg);
 
         try {
             os = client.getOutputStream();

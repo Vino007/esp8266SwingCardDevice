@@ -1,5 +1,9 @@
 package com.example.vino.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import java.util.List;
 
 /**
@@ -14,5 +18,26 @@ public class MyUtils {
             }
         }
 
+    }
+
+    /**
+     * 判断是否连接上wifi
+     * isConnected 为true表示当前手机有连接上网络
+     * iswifi 为true 表示当前手机连接的网络是wifi
+     *
+     * @return
+     */
+    public static boolean isWifiConnect(Context context){
+        ConnectivityManager cm= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork=cm.getActiveNetworkInfo();//若当前没有任何网络连接则为null，因此使用之前要先判断！null
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        boolean isWifi=false;
+        if(isConnected) {//
+            isWifi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+
+        }
+        return isWifi;
     }
 }

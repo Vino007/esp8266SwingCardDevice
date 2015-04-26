@@ -1,8 +1,6 @@
 package com.example.vino.esp8266test;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,18 +8,23 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vino.utils.MyApplication;
+import com.example.vino.utils.MyUtils;
 import com.example.vino.utils.ReadParameterSetting;
 import com.example.vino.utils.SwingCardSetting;
 import com.example.vino.utils.TimedialogUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -34,15 +37,20 @@ public class MainActivity extends ActionBarActivity {
     private Button setMode_btn;
     private Button setDate_btn;
     private Button setTime_btn;
-    private EditText send_data_textview;
+    private Button callElevator_btn;
     private Handler handler;
-    private MyThread myThread;//短连接使用的线程
     private TextView receive_data_textview;
-
+    private ListView parameter_lv;
     private boolean connectStatus=false;
     private List<Integer> message=new ArrayList<Integer>();//报文存储
     private int workMode=-1;//工作模式
     private SocketClient client=null;
+    private MyApplication application;
+
+    private String[] parameterNames={"刷卡器时间:","刷卡时段:","工作模式"};
+    private String[] parameterContents={"无","无","无"};
+    private List<Map<String, Object>> items_lv;
+    private SimpleAdapter simpleAdapter_lv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,17 +63,30 @@ public class MainActivity extends ActionBarActivity {
         setDate_btn= (Button) findViewById(R.id.setDate_btn);
         setTime_btn= (Button) findViewById(R.id.setTime_btn);
         readParameter_btn= (Button) findViewById(R.id.readParameter_btn);
+
+        callElevator_btn= (Button) findViewById(R.id.call_elevator_btn);
         selectMode_group= (RadioGroup) findViewById(R.id.selectMode_group);
-        send_data_textview= (EditText) findViewById(R.id.send_data_textview);
+
         receive_data_textview= (TextView) findViewById(R.id.receive_data_textview);
         Log.d("start","正常启动");
         handler=new MyHandler();
-        //初始化报文
+        //初始化下行报文
         for(int i=0;i<9;i++)
             message.add(0x00);
 
+        parameter_lv= (ListView) findViewById(R.id.main_listview);
+        initListView();
 
   /******************************监听器************************************/
+
+        callElevator_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Intent intent=new Intent(MainActivity.this,CallElevatorActivity.class);
+                startActivity(intent);
+            }
+        });
+
         readParameter_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,7 +166,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                if(true) {
+                if(MyUtils.isWifiConnect(MainActivity.this)) {
                     if (!connectStatus) {
                         ConnectThread connectThread = new ConnectThread();
                         Thread thread = new Thread(connectThread);
@@ -193,75 +214,77 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    /**
-     * 判断是否连接上wifi
-     * isConnected 为true表示当前手机有连接上网络
-     * iswifi 为true 表示当前手机连接的网络是wifi
-     *
-     * @return
-     */
-    public boolean isWifiConnect(){
-        ConnectivityManager cm= (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork=cm.getActiveNetworkInfo();//若当前没有任何网络连接则为null，因此使用之前要先判断！null
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
 
-        boolean isWifi=false;
-        if(isConnected) {//
-            isWifi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-            receive_data_textview.setText(activeNetwork.toString());
+
+    /**
+     * 初始化listView
+     */
+    public void initListView() {
+         items_lv = new ArrayList<Map<String, Object>>();
+        for(int i=0;i<3;i++){
+            Map<String, Object> item = new HashMap<String, Object>();
+            item.put("parameterName",parameterNames[i]);
+            item.put("parameterContent",parameterContents[i]);
+            items_lv.add(item);
         }
-        return isWifi;
+
+         simpleAdapter_lv=new SimpleAdapter(this,items_lv,R.layout.read_parameter_item,
+                new String[]{"parameterName","parameterContent"},new int[]{R.id.read_parameter_name, R.id.read_parameter_content});
+        parameter_lv.setAdapter(simpleAdapter_lv);
     }
 /**********************************handler*********************************************/
     class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 1) {
-                Log.i("sendSuccess", "sendSuccess");
+            if (msg.what == 0X01) {
 
-                if(msg.obj!=null)
-                receive_data_textview.setText((String)msg.obj);
+
+                if(msg.obj!=null){
+                    receive_data_textview.setText((String)msg.obj);
+                    Toast.makeText(MainActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
+                    items_lv.clear();
+                    String parameterContents= (String) msg.obj;
+                    for(int i=0;i<3;i++){
+                        Map<String, Object> item = new HashMap<String, Object>();
+                        item.put("parameterName",parameterNames[i]);
+                        item.put("parameterContent",parameterContents);
+                        items_lv.add(item);
+                    }
+                    simpleAdapter_lv.notifyDataSetChanged();
+                }
+
             }
             else if (msg.what==2) {//连接成功
                 connect_btn.setText("disconnect");
                 connectStatus=true;
+                Toast.makeText(MainActivity.this,"连接成功",Toast.LENGTH_LONG).show();
 
             }
             else if (msg.what == 3){//连接失败
                 connect_btn.setText("connect");
                 connectStatus=false;
+                Toast.makeText(MainActivity.this,"创建连接失败，请确认是否连接对正确的wifi",Toast.LENGTH_SHORT).show();
             }
         }
     }
 /*********************************线程*********************************************/
-    class MyThread implements Runnable{
-        @Override
-        public void run() {
-            //socket连接
-            Log.i("socket","建立socket");
-            SocketClient client=new SocketClient("192.168.4.1",8080);
-            String result=client.sendMessage(send_data_textview.getText().toString().trim());
-            Message msg=handler.obtainMessage();
-            msg.what=1;
-            msg.obj=result;
-            handler.sendMessage(msg);
-        }
-    }
+
     class ConnectThread implements Runnable{
         @Override
         public void run() {
             try {
                 client = new SocketClient("192.168.4.1", 8080);
+                application= (MyApplication) MainActivity.this.getApplication();
+                application.setClient(client);
                 Message msg=handler.obtainMessage();
-                msg.what=2;
+                msg.what=2;//成功
                 handler.sendMessage(msg);
 
             }catch (RuntimeException e){
                 e.printStackTrace();
                 Log.e("error","SocketClient构造器出错");
                 Message msg=handler.obtainMessage();
-                msg.what=3;
+                msg.what=3;//创建连接失败
                 handler.sendMessage(msg);
             }
         }
@@ -275,7 +298,7 @@ public class MainActivity extends ActionBarActivity {
             client.sendMessage(message);//无返回值，不读取模块返回的信息
 
             Message msg = handler.obtainMessage();
-            msg.what = 1;
+            msg.what = 0X01;
             msg.obj = result;
 
             handler.sendMessage(msg);
@@ -285,11 +308,10 @@ public class MainActivity extends ActionBarActivity {
     class ReadMessageThread implements  Runnable{
         @Override
         public void run(){
-            String result=client.readMessage(message);//无返回值，不读取模块返回的信息
+            String result=client.readMessage(message);
             Message msg = handler.obtainMessage();
-            msg.what = 1;
+            msg.what = 0X01;
             msg.obj = result;
-
             handler.sendMessage(msg);
         }
 
