@@ -4,160 +4,157 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
+
     <ListView
         android:id="@+id/main_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ListView>
-    <LinearLayout
-        android:layout_width="match_parent"
+
+    <TextView
+        android:id="@+id/status_textview"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:hint="192.168.4.1" />
-
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="8080" />
-
-        <Button
-            android:id="@+id/connect_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="connect" />
-    </LinearLayout>
-
-
+        android:text="接收到报文:" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/status_textview"
-            android:layout_width="0dp"
-            android:layout_weight="3"
-            android:layout_height="wrap_content"
-            android:text="接收到的数据:" />
 
         <TextView
             android:id="@+id/receive_data_textview"
             android:layout_width="0dp"
-            android:layout_weight="5"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="无" />
+
         <Button
             android:id="@+id/readParameter_btn"
             android:layout_width="0dp"
-            android:layout_weight="3"
             android:layout_height="wrap_content"
-            android:text="查看模块参数"/>
+            android:layout_weight="1"
+            android:text="查看模块参数" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="设置刷卡时段" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="设置刷卡时段" />
 
         <Button
             android:id="@+id/setBeginTime_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="设置开始时间"/>
+            android:layout_weight="1"
+            android:text="设置开始时间" />
+
         <Button
             android:id="@+id/setEndTime_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="设置结束时间"/>
+            android:layout_weight="1"
+            android:text="设置结束时间" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="设置刷卡器时间" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="设置刷卡器时间" />
 
         <Button
             android:id="@+id/setDate_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="设置日期"/>
+            android:layout_weight="1"
+            android:text="设置日期" />
+
         <Button
             android:id="@+id/setTime_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="设置时钟"/>
+            android:layout_weight="1"
+            android:text="设置时钟" />
 
     </LinearLayout>
 
-        <RadioGroup
-            android:orientation="horizontal"
-            android:id="@+id/selectMode_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <RadioButton
-                android:id="@+id/mode1_rbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="模式一"/>
-            <RadioButton
-                android:id="@+id/mode2_rbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="模式二"/>
-            <RadioButton
-                android:id="@+id/mode3_rbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="模式三"/>
-            <RadioButton
-                android:id="@+id/mode4_rbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="模式四"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="设置工作模式" />
 
-            </RadioGroup>
+    <RadioGroup
+        android:id="@+id/selectMode_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/mode1_rbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="模式一" />
+
+        <RadioButton
+            android:id="@+id/mode2_rbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="模式二" />
+
+        <RadioButton
+            android:id="@+id/mode3_rbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="模式三" />
+
+        <RadioButton
+            android:id="@+id/mode4_rbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="模式四" />
+
+    </RadioGroup>
+
 
     <Button
         android:id="@+id/setMode_btn"
-        android:text="确定选择该模式"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="确定选择该模式" />
+
     <Button
         android:id="@+id/call_elevator_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="呼梯"/>
-    <LinearLayout
+        android:text="呼梯" />
+
+    <Button
+        android:id="@+id/connect_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/send_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="send" />
-    </LinearLayout>
+
+        android:text="connect" />
+
+    <Button
+        android:id="@+id/send_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="发送命令" />
+
 </LinearLayout>

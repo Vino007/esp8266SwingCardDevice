@@ -105,53 +105,55 @@ public class SocketClient {
 
     /**
      * 下行报文的crc校验
+     *
      * @param msg
      * @return
      */
-    public List<Integer>  crc(List<Integer> msg){
-        StringBuilder sb=new StringBuilder();
+    public List<Integer> crc(List<Integer> msg) {
+        StringBuilder sb = new StringBuilder();
         //校验前7位，后两位为crc校验码
-        for(int i=0;i<msg.size()-2;i++){
-            if(msg.get(i)<17)
-                sb.append("0"+Integer.toHexString(msg.get(i)));
+        for (int i = 0; i < msg.size() - 2; i++) {
+            if (msg.get(i) < 17)
+                sb.append("0" + Integer.toHexString(msg.get(i)));
             else
                 sb.append(Integer.toHexString(msg.get(i)));
         }
-        byte[] sbuf=CRC16M.getSendBuf(sb.toString());
-        String crcResultHexString=CRC16M.getBufHexStr(sbuf);
-        String crcLow=crcResultHexString.charAt(crcResultHexString.length()-2)+""+crcResultHexString.charAt(crcResultHexString.length()-1);
-        String crcHigh=crcResultHexString.charAt(crcResultHexString.length()-4)+""+crcResultHexString.charAt(crcResultHexString.length()-3);
-        Log.i("crc",crcResultHexString);
-        Log.i("crclow",crcLow);
-        Log.i("crchigh",crcHigh);
-        msg.set(msg.size()-2, Integer.parseInt(crcHigh, 16));
-        msg.set(msg.size()-1,Integer.parseInt(crcLow,16));
+        byte[] sbuf = CRC16M.getSendBuf(sb.toString());
+        String crcResultHexString = CRC16M.getBufHexStr(sbuf);
+        String crcLow = crcResultHexString.charAt(crcResultHexString.length() - 2) + "" + crcResultHexString.charAt(crcResultHexString.length() - 1);
+        String crcHigh = crcResultHexString.charAt(crcResultHexString.length() - 4) + "" + crcResultHexString.charAt(crcResultHexString.length() - 3);
+        Log.i("crc", crcResultHexString);
+        Log.i("crclow", crcLow);
+        Log.i("crchigh", crcHigh);
+        msg.set(msg.size() - 2, Integer.parseInt(crcHigh, 16));
+        msg.set(msg.size() - 1, Integer.parseInt(crcLow, 16));
         Log.i("下行报文", Arrays.toString(msg.toArray()));
         return msg;
 
     }
 
-    public boolean isClose(){
+    public boolean isClose() {
         return client.isClosed();
     }
 
     /**
      * 发送整型数组
      * 每次发送完毕后初始化报文即全部设置为0x00
+     *
      * @param msg
      * @return
      */
 
     public void sendMessage(List<Integer> msg) {
 
-        msg=crc(msg);//添加crc校验
+        msg = crc(msg);//添加crc校验
         try {
             os = client.getOutputStream();
-            BufferedOutputStream out=new BufferedOutputStream(os);//不能使用dataoutputStream，由于data传送的是byte类型，byte的范围-127-127,不符合
+            BufferedOutputStream out = new BufferedOutputStream(os);//不能使用dataoutputStream，由于data传送的是byte类型，byte的范围-127-127,不符合
             is = client.getInputStream();
             in = new BufferedReader(new InputStreamReader(is));
 
-            if(msg!=null) {
+            if (msg != null) {
                 for (int i = 0; i < msg.size(); i++) {
 
                     out.write(msg.get(i));
@@ -164,9 +166,9 @@ public class SocketClient {
             //return in.readLine();//阻塞直到读取到换行，读取响应的字符串
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
 
-          //  return "";
+            //  return "";
         }
     }
 
@@ -174,19 +176,20 @@ public class SocketClient {
     /**
      * 发送整型数组
      * 每次发送完毕后初始化报文即全部设置为0x00
+     *
      * @param msg
      * @return
      */
     public String readMessage(List<Integer> msg) {
-        msg=crc(msg);
+        msg = crc(msg);
 
         try {
             os = client.getOutputStream();
-            BufferedOutputStream out=new BufferedOutputStream(os);//不能使用dataoutputStream，由于data传送的是byte类型，byte的范围-127-127,不符合
+            BufferedOutputStream out = new BufferedOutputStream(os);//不能使用dataoutputStream，由于data传送的是byte类型，byte的范围-127-127,不符合
             is = client.getInputStream();
             in = new BufferedReader(new InputStreamReader(is));
 
-            if(msg!=null) {
+            if (msg != null) {
                 for (int i = 0; i < msg.size(); i++) {
 
                     out.write(msg.get(i));
@@ -200,7 +203,7 @@ public class SocketClient {
         } catch (IOException e) {
             e.printStackTrace();
             return "void";
-        }finally {
+        } finally {
 
         }
 

@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class MyUtils {
     //将list清空成全零数组
-    public static void clearList(List list){
-        if(list!=null) {
+    public static void clearList(List list) {
+        if (list != null) {
             for (int i = 0; i < list.size(); i++) {
                 list.set(i, 0);
             }
@@ -27,14 +27,14 @@ public class MyUtils {
      *
      * @return
      */
-    public static boolean isWifiConnect(Context context){
-        ConnectivityManager cm= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork=cm.getActiveNetworkInfo();//若当前没有任何网络连接则为null，因此使用之前要先判断！null
+    public static boolean isWifiConnect(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();//若当前没有任何网络连接则为null，因此使用之前要先判断！null
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        boolean isWifi=false;
-        if(isConnected) {//
+        boolean isWifi = false;
+        if (isConnected) {//
             isWifi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
 
         }

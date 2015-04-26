@@ -8,7 +8,7 @@ public class CRC16M {
     static final String HEXES = "0123456789ABCDEF";
     byte uchCRCHi = (byte) 0xFF;
     byte uchCRCLo = (byte) 0xFF;
-    private static byte[] auchCRCHi = { 0x00, (byte) 0xC1, (byte) 0x81,
+    private static byte[] auchCRCHi = {0x00, (byte) 0xC1, (byte) 0x81,
             (byte) 0x40, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41,
             (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x00,
             (byte) 0xC1, (byte) 0x81, (byte) 0x40, (byte) 0x01, (byte) 0xC0,
@@ -59,9 +59,9 @@ public class CRC16M {
             (byte) 0x80, (byte) 0x41, (byte) 0x00, (byte) 0xC1, (byte) 0x81,
             (byte) 0x40, (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41,
             (byte) 0x01, (byte) 0xC0, (byte) 0x80, (byte) 0x41, (byte) 0x00,
-            (byte) 0xC1, (byte) 0x81, (byte) 0x40 };
+            (byte) 0xC1, (byte) 0x81, (byte) 0x40};
 
-    private static byte[] auchCRCLo = { (byte) 0x00, (byte) 0xC0, (byte) 0xC1,
+    private static byte[] auchCRCLo = {(byte) 0x00, (byte) 0xC0, (byte) 0xC1,
             (byte) 0x01, (byte) 0xC3, (byte) 0x03, (byte) 0x02, (byte) 0xC2,
             (byte) 0xC6, (byte) 0x06, (byte) 0x07, (byte) 0xC7, (byte) 0x05,
             (byte) 0xC5, (byte) 0xC4, (byte) 0x04, (byte) 0xCC, (byte) 0x0C,
@@ -112,7 +112,7 @@ public class CRC16M {
             (byte) 0x4C, (byte) 0x8C, (byte) 0x44, (byte) 0x84, (byte) 0x85,
             (byte) 0x45, (byte) 0x87, (byte) 0x47, (byte) 0x46, (byte) 0x86,
             (byte) 0x82, (byte) 0x42, (byte) 0x43, (byte) 0x83, (byte) 0x41,
-            (byte) 0x81, (byte) 0x80, (byte) 0x40 };
+            (byte) 0x81, (byte) 0x80, (byte) 0x40};
 
     public int value;
 
@@ -147,10 +147,10 @@ public class CRC16M {
     }
 
     private static byte uniteBytes(byte src0, byte src1) {
-        byte _b0 = Byte.decode("0x" + new String(new byte[] { src0 }))
+        byte _b0 = Byte.decode("0x" + new String(new byte[]{src0}))
                 .byteValue();
         _b0 = (byte) (_b0 << 4);
-        byte _b1 = Byte.decode("0x" + new String(new byte[] { src1 }))
+        byte _b1 = Byte.decode("0x" + new String(new byte[]{src1}))
                 .byteValue();
         byte ret = (byte) (_b0 ^ _b1);
         return ret;
@@ -158,7 +158,7 @@ public class CRC16M {
 
     private static byte[] HexString2Buf(String src) {
         int len = src.length();
-        byte[] ret = new byte[len / 2+2];
+        byte[] ret = new byte[len / 2 + 2];
         byte[] tmp = src.getBytes();
         for (int i = 0; i < len; i += 2) {
             ret[i / 2] = uniteBytes(tmp[i], tmp[i + 1]);
@@ -166,30 +166,32 @@ public class CRC16M {
         return ret;
     }
 
-    public static byte[] getSendBuf(String toSend){
+    public static byte[] getSendBuf(String toSend) {
         byte[] bb = HexString2Buf(toSend);
         CRC16M crc16 = new CRC16M();
-        crc16.update(bb, bb.length-2);
+        crc16.update(bb, bb.length - 2);
         int ri = crc16.getValue();
-        bb[bb.length-1]=(byte) (0xff & ri);
-        bb[bb.length-2]=(byte) ((0xff00 & ri) >> 8);
+        bb[bb.length - 1] = (byte) (0xff & ri);
+        bb[bb.length - 2] = (byte) ((0xff00 & ri) >> 8);
         return bb;
     }
-    public static boolean checkBuf(byte[] bb){
+
+    public static boolean checkBuf(byte[] bb) {
         CRC16M crc16 = new CRC16M();
-        crc16.update(bb, bb.length-2);
+        crc16.update(bb, bb.length - 2);
         int ri = crc16.getValue();
-        if(bb[bb.length-1]==(byte)(ri&0xff)
-                && bb[bb.length-2]==(byte) ((0xff00 & ri) >> 8))
+        if (bb[bb.length - 1] == (byte) (ri & 0xff)
+                && bb[bb.length - 2] == (byte) ((0xff00 & ri) >> 8))
             return true;
         return false;
     }
-    public static String getBufHexStr(byte[] raw){
-        if ( raw == null ) {
+
+    public static String getBufHexStr(byte[] raw) {
+        if (raw == null) {
             return null;
         }
-        final StringBuilder hex = new StringBuilder( 2 * raw.length );
-        for ( final byte b : raw ) {
+        final StringBuilder hex = new StringBuilder(2 * raw.length);
+        for (final byte b : raw) {
             hex.append(HEXES.charAt((b & 0xF0) >> 4))
                     .append(HEXES.charAt((b & 0x0F)));
         }

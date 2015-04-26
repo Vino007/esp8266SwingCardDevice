@@ -20,30 +20,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * 0x10: 呼梯成功
+ * 0x01: 发送命令成功
+ */
 public class CallElevatorActivity extends ActionBarActivity {
     private GridView gv;
     private ListView parameter_lv;
-    private List<Integer> message=new ArrayList<Integer>();//报文存储
+    private List<Integer> message = new ArrayList<Integer>();//报文存储
     private Handler handler;
     private SocketClient client;
-    private String[] parameterNames={"刷卡器时间:","刷卡时段:","工作模式"};
-    private String[] parameterContents={"无","无","无"};
-    private List<Map<String,Object>> items_lv;
+    private String[] parameterNames = {"刷卡器时间:", "刷卡时段:", "工作模式"};
+    private String[] parameterContents = {"无", "无", "无"};
+    private List<Map<String, Object>> items_lv;
     private MyApplication application;
     SimpleAdapter simpleAdapter_listview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call_elevator);
 
-        handler=new MyHandler();
+        handler = new MyHandler();
         //初始化报文
-        for(int i=0;i<9;i++)
+        for (int i = 0; i < 9; i++)
             message.add(0x00);
 
-        gv= (GridView) findViewById(R.id.call_elevator_gridview);
-        parameter_lv= (ListView) findViewById(R.id.call_elevator_listview);
+        gv = (GridView) findViewById(R.id.call_elevator_gridview);
+        parameter_lv = (ListView) findViewById(R.id.call_elevator_listview);
         initListView();
         initGridView();
     }
@@ -53,30 +57,30 @@ public class CallElevatorActivity extends ActionBarActivity {
      */
     public void initListView() {
         items_lv = new ArrayList<Map<String, Object>>();
-        for(int i=0;i<3;i++){
+        for (int i = 0; i < 3; i++) {
             Map<String, Object> item = new HashMap<String, Object>();
-            item.put("parameterName",parameterNames[i]);
-            item.put("parameterContent",parameterContents[i]);
+            item.put("parameterName", parameterNames[i]);
+            item.put("parameterContent", parameterContents[i]);
             items_lv.add(item);
         }
 
-        simpleAdapter_listview=new SimpleAdapter(this,items_lv,R.layout.read_parameter_item,
-                new String[]{"parameterName","parameterContent"},new int[]{R.id.read_parameter_name, R.id.read_parameter_content});
+        simpleAdapter_listview = new SimpleAdapter(this, items_lv, R.layout.read_parameter_item,
+                new String[]{"parameterName", "parameterContent"}, new int[]{R.id.read_parameter_name, R.id.read_parameter_content});
         parameter_lv.setAdapter(simpleAdapter_listview);
     }
 
     /**
      * 初始化gridview
      */
-    public void initGridView(){
-        List<Map<String,Object>> items =new ArrayList<Map<String,Object>>();
-        for(int i=0;i<64;i++){
-            Map<String,Object> item=new HashMap<String,Object>();
-            item.put("textItem",i+1+"层");
+    public void initGridView() {
+        List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < 64; i++) {
+            Map<String, Object> item = new HashMap<String, Object>();
+            item.put("textItem", i + 1 + "层");
             items.add(item);
         }
-        SimpleAdapter simpleAdapter=new SimpleAdapter(this,items,R.layout.call_elevator_button_item,
-                new String[]{"textItem"},new int[]{R.id.floor_btn});
+        SimpleAdapter simpleAdapter = new SimpleAdapter(this, items, R.layout.call_elevator_button_item,
+                new String[]{"textItem"}, new int[]{R.id.floor_btn});
         gv.setAdapter(simpleAdapter);
         /**
          * 点击楼层按钮，实现呼梯与获取模块实时参数
@@ -91,7 +95,7 @@ public class CallElevatorActivity extends ActionBarActivity {
                 //获取全局的client实例
                 application = (MyApplication) CallElevatorActivity.this.getApplication();
                 client = application.getClient();
-                if (client != null && !client.isClose()) {
+                if (client != null && !client.isClose()) { //判断socket连接是否还存在
                     SendMessageThread sendMessageThread = new SendMessageThread();
                     Thread thread = new Thread(sendMessageThread);
                     thread.start();
@@ -108,49 +112,58 @@ public class CallElevatorActivity extends ActionBarActivity {
     /**
      * 发送并接收报文
      */
-    class SendMessageThread implements  Runnable{
+    class SendMessageThread implements Runnable {
         @Override
-        public void run(){
-            String result="";
-                client.sendMessage(message);//无返回值，不读取模块返回的信息
-                Message msg = handler.obtainMessage();
+        public void run() {
+            String result = null;
+            client.sendMessage(message);//无返回值，不读取模块返回的信息
+            Message msg = handler.obtainMessage();
+            msg.what = 0x10;//呼梯成功
+            handler.sendMessage(msg);
+            //读取参数信息
 
-                msg.what=0x10;//呼梯成功
-                handler.sendMessage(msg);
-                //读取参数信息
-                ReadParameterSetting readParameterSetting=new ReadParameterSetting(message);
-                message=readParameterSetting.readAll();
-                result=client.readMessage(message);
-                msg.what =0x01;//接收成功
-                msg.obj = result;
-                handler.sendMessage(msg);
-
+            /**
+             *
+             */
+            ReadParameterSetting readParameterSetting = new ReadParameterSetting(message);
+            message = readParameterSetting.readAll();
+            result = client.readMessage(message);
+            msg=handler.obtainMessage();
+           if(result!=null) {
+               msg.what = 0x01;//接收成功
+               msg.obj = result;
+               handler.sendMessage(msg);
+           }
         }
 
     }
-    /**********************************handler*********************************************/
+
+    /**
+     * *******************************handler********************************************
+     */
     class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            if(msg.what==0x01){//成功接收到数据
-                Toast.makeText(CallElevatorActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
-                items_lv.clear();
-                String parameterContents= (String) msg.obj;
-                for(int i=0;i<3;i++){
-                    Map<String, Object> item = new HashMap<String, Object>();
-                    item.put("parameterName",parameterNames[i]);
-                    item.put("parameterContent",parameterContents);
-                    items_lv.add(item);
+            if (msg.what == 0x01) {//成功接收到数据
+                if (msg.obj != null) {
+                    Toast.makeText(CallElevatorActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
+                    items_lv.clear();
+                    String parameterContents = (String) msg.obj;
+                    for (int i = 0; i < 3; i++) {
+                        Map<String, Object> item = new HashMap<String, Object>();
+                        item.put("parameterName", parameterNames[i]);
+                        item.put("parameterContent", parameterContents);
+                        items_lv.add(item);
+                    }
+                    simpleAdapter_listview.notifyDataSetChanged();
                 }
-                simpleAdapter_listview.notifyDataSetChanged();
             }
-            else if(msg.what==0x10){
+            if (msg.what == 0x10) {
                 Toast.makeText(CallElevatorActivity.this, "呼梯成功", Toast.LENGTH_SHORT).show();
             }
 
         }
     }
-
 
 
 }
