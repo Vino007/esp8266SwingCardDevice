@@ -14,6 +14,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vino.utils.MessageHandler;
 import com.example.vino.utils.MyApplication;
 import com.example.vino.utils.MyUtils;
 import com.example.vino.utils.ReadParameterSetting;
@@ -51,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
     private SocketClient client = null;
     private MyApplication application;
 
-    private String[] parameterNames = {"刷卡器时间:", "刷卡时段:", "工作模式"};
+    private String[] parameterNames = {"刷卡器时间:", "刷卡时段:", "工作模式:"};
     private String[] parameterContents = {"无", "无", "无"};
     private List<Map<String, Object>> items_lv;
     private SimpleAdapter simpleAdapter_lv;
@@ -252,16 +253,17 @@ public class MainActivity extends ActionBarActivity {
             if (msg.what == 0X01) {
                 Toast.makeText(MainActivity.this, "发送命令成功", Toast.LENGTH_SHORT).show();
                 if (msg.obj != null) {
-                    List<Integer> parameterContents = (List<Integer>) msg.obj;
-                    receive_data_textview.setText((Arrays.toString(parameterContents.toArray())));
+                    List<Integer> resultMessage = (List<Integer>) msg.obj;
+                    parameterContents= MessageHandler.messageHandle(resultMessage);
+                    receive_data_textview.setText((Arrays.toString(resultMessage.toArray())));
                     Toast.makeText(MainActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
                     items_lv.clear();
 
-                    Log.i("接收到的报文",Arrays.toString(parameterContents.toArray()));
+                    Log.i("接收到的报文",Arrays.toString(resultMessage.toArray()));
                     for (int i = 0; i < 3; i++) {
                         Map<String, Object> item = new HashMap<String, Object>();
                         item.put("parameterName", parameterNames[i]);
-                        item.put("parameterContent", parameterContents.get(i));
+                        item.put("parameterContent", parameterContents[i]);
                         items_lv.add(item);
                     }
                     simpleAdapter_lv.notifyDataSetChanged();
