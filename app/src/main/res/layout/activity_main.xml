@@ -1,8 +1,4 @@
 
-<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:scrollbars="vertical">-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -43,126 +39,17 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="查看模块参数" />
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:text="设置刷卡时段" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/setBeginTime_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="设置开始时间" />
-
-        <Button
-            android:id="@+id/setEndTime_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="设置结束时间" />
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:text="设置刷卡器时间" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/setDate_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="设置日期" />
-
-        <Button
-            android:id="@+id/setTime_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="设置时钟" />
-
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="设置工作模式" />
-
-    <RadioGroup
-        android:id="@+id/selectMode_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/mode1_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式一" />
-
-        <RadioButton
-            android:id="@+id/mode2_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式二" />
-
-        <RadioButton
-            android:id="@+id/mode3_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式三" />
-
-        <RadioButton
-            android:id="@+id/mode4_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式四" />
-
-    </RadioGroup>
-
-
-    <Button
-        android:id="@+id/setMode_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="确定选择该模式" />
-
-    <Button
-        android:id="@+id/call_elevator_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="呼梯" />
-
     <Button
         android:id="@+id/connect_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:text="connect" />
-
     <Button
-        android:id="@+id/send_btn"
+        android:id="@+id/setting_btn"
+        android:text="设置参数"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:text="发送命令" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
- <!-- </ScrollView>-->

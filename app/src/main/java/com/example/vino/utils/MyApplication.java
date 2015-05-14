@@ -9,6 +9,15 @@ import com.example.vino.esp8266test.SocketClient;
  */
 public class MyApplication extends Application {
     private SocketClient client;
+    private boolean connectStatus;
+
+    public boolean getConnectStatus() {
+        return connectStatus;
+    }
+
+    public void setConnectStatus(boolean connectStatus) {
+        this.connectStatus = connectStatus;
+    }
 
     public SocketClient getClient() {
         return client;

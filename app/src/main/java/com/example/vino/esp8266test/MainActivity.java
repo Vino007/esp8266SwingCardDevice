@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,8 +17,6 @@ import com.example.vino.utils.MessageHandler;
 import com.example.vino.utils.MyApplication;
 import com.example.vino.utils.MyUtils;
 import com.example.vino.utils.ReadParameterSetting;
-import com.example.vino.utils.SwingCardSetting;
-import com.example.vino.utils.TimedialogUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,25 +30,19 @@ import java.util.Map;
  * 0x03: 建立连接失败
  */
 public class MainActivity extends ActionBarActivity {
-    private Button send_btn;
+
     private Button connect_btn;
-    private Button setBeginTime_btn;
-    private Button setEndTime_btn;
+
     private Button readParameter_btn;
-    private RadioGroup selectMode_group;
-    private Button setMode_btn;
-    private Button setDate_btn;
-    private Button setTime_btn;
-    private Button callElevator_btn;
+    private Button setting_btn;
     private Handler handler;
     private TextView receive_data_textview;
     private ListView parameter_lv;
     private boolean connectStatus = false;
-    private List<Integer> message = new ArrayList<Integer>();//报文存储
-    private int workMode = -1;//工作模式
+    private List<Integer> message = new ArrayList<>();//报文存储
+
     private SocketClient client = null;
     private MyApplication application;
-
     private String[] parameterNames = {"刷卡器时间:", "刷卡时段:", "工作模式:"};
     private String[] parameterContents = {"无", "无", "无"};
     private List<Map<String, Object>> items_lv;
@@ -61,17 +52,12 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        send_btn = (Button) findViewById(R.id.send_btn);
-        connect_btn = (Button) findViewById(R.id.connect_btn);
-        setBeginTime_btn = (Button) findViewById(R.id.setBeginTime_btn);
-        setEndTime_btn = (Button) findViewById(R.id.setEndTime_btn);
-        setMode_btn = (Button) findViewById(R.id.setMode_btn);
-        setDate_btn = (Button) findViewById(R.id.setDate_btn);
-        setTime_btn = (Button) findViewById(R.id.setTime_btn);
-        readParameter_btn = (Button) findViewById(R.id.readParameter_btn);
 
-        callElevator_btn = (Button) findViewById(R.id.call_elevator_btn);
-        selectMode_group = (RadioGroup) findViewById(R.id.selectMode_group);
+        connect_btn = (Button) findViewById(R.id.connect_btn);
+
+        readParameter_btn = (Button) findViewById(R.id.readParameter_btn);
+        setting_btn= (Button) findViewById(R.id.setting_btn);
+
 
         receive_data_textview = (TextView) findViewById(R.id.receive_data_textview);
         Log.d("start", "正常启动");
@@ -79,16 +65,16 @@ public class MainActivity extends ActionBarActivity {
         //初始化下行报文
         for (int i = 0; i < 9; i++)
             message.add(0x00);
-
+        application = (MyApplication) MainActivity.this.getApplication();
         parameter_lv = (ListView) findViewById(R.id.main_listview);
         initListView();
 
         /******************************监听器************************************/
 
-        callElevator_btn.setOnClickListener(new View.OnClickListener() {
+        setting_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CallElevatorActivity.class);
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                 startActivity(intent);
             }
         });
@@ -108,71 +94,6 @@ public class MainActivity extends ActionBarActivity {
         });
 
 
-        setTime_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimedialogUtils timedialogUtils = new TimedialogUtils(MainActivity.this, message);
-                message = timedialogUtils.showTimepickerDialog("deviceTime");
-            }
-        });
-
-        setDate_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimedialogUtils timedialogUtils = new TimedialogUtils(MainActivity.this, message);
-                message = timedialogUtils.showDatepickerDialog();
-            }
-        });
-
-        setBeginTime_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimedialogUtils timedialogUtils = new TimedialogUtils(MainActivity.this, message);
-                message = timedialogUtils.showTimepickerDialog("beginTime");
-
-
-            }
-        });
-
-        setEndTime_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimedialogUtils timedialogUtils = new TimedialogUtils(MainActivity.this, message);
-                message = timedialogUtils.showTimepickerDialog("endTime");
-            }
-        });
-
-
-        setMode_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                int selectId = selectMode_group.getCheckedRadioButtonId();
-                Log.i("selectId", selectId + "");
-                switch (selectId) {
-                    case R.id.mode1_rbtn:
-                        workMode = 1;
-                        break;
-                    case R.id.mode2_rbtn:
-                        workMode = 2;
-                        break;
-                    case R.id.mode3_rbtn:
-                        workMode = 3;
-                        break;
-                    case R.id.mode4_rbtn:
-                        workMode = 4;
-                        break;
-                    default:
-                        workMode = -1;
-                }
-                Log.i("workMode", workMode + "");
-                if (workMode != -1) {
-                    SwingCardSetting swingCardSetting = new SwingCardSetting(message);
-                    message = swingCardSetting.setMode(workMode);
-                }
-
-            }
-        });
 
         connect_btn.setOnClickListener(new View.OnClickListener() {
 
@@ -193,36 +114,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        send_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("message", Arrays.toString(message.toArray()));
 
-                /********************短连接********************/
-                /**
-                 * 0.使用send按钮进行建立连接以及发送数据
-                 * 1.每次连接结束都关闭输入输出流以及socket
-                 * 2.readline是阻塞方法，因此会等到接受到换行符后才结束
-                 * 3.当接收到换行后立马就断开连接了 如果调用while(readLine！=null)可以接收过个数据才结束
-                 */
-                // myThread=new MyThread();
-                //  Thread thread=new Thread(myThread);
-
-                /********************长连接********************/
-                /**
-                 * 0.使用connet按钮进行连接，使用send按钮进行发送数据
-                 * 1.不能关闭输入输出流
-                 * 2.当不需要连接的时候手动关闭socket。close或者等到timeout自动关闭
-                 * 3.
-                 */
-                if (MyUtils.isWifiConnect(MainActivity.this)&&connectStatus) {
-                    SendMessageThread sendMessageThread = new SendMessageThread();
-                    Thread thread = new Thread(sendMessageThread);
-                    thread.start();
-                } else
-                    Toast.makeText(MainActivity.this, "请先连接", Toast.LENGTH_SHORT).show();
-            }
-        });
 
     }
 
@@ -272,11 +164,13 @@ public class MainActivity extends ActionBarActivity {
             } else if (msg.what == 0x02) {//连接成功
                 connect_btn.setText("disconnect");
                 connectStatus = true;
+                application.setConnectStatus(true);
                 Toast.makeText(MainActivity.this, "连接成功", Toast.LENGTH_LONG).show();
 
             } else if (msg.what == 0x03) {//连接失败
                 connect_btn.setText("connect");
                 connectStatus = false;
+                application.setConnectStatus(false);
                 Toast.makeText(MainActivity.this, "创建连接失败，请确认是否连接对正确的wifi", Toast.LENGTH_SHORT).show();
             }
         }
@@ -291,14 +185,16 @@ public class MainActivity extends ActionBarActivity {
         public void run() {
             try {
                 client = new SocketClient("192.168.4.1", 8080);
-                application = (MyApplication) MainActivity.this.getApplication();
+
                 application.setClient(client);
+                application.setConnectStatus(true);
                 Message msg = handler.obtainMessage();
                 msg.what = 0x02;//成功
                 handler.sendMessage(msg);
 
             } catch (RuntimeException e) {
                 e.printStackTrace();
+                application.setConnectStatus(false);
                 Log.e("error", "SocketClient构造器出错");
                 Message msg = handler.obtainMessage();
                 msg.what = 0x03;//创建连接失败
