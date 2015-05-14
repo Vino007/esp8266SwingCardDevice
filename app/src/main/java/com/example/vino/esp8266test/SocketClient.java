@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -180,9 +181,9 @@ public class SocketClient {
      * @param msg
      * @return
      */
-    public String readMessage(List<Integer> msg) {
+    public List<Integer> readMessage(List<Integer> msg) {
         msg = crc(msg);
-
+        List<Integer> resultMsg=new ArrayList<>();
         try {
             os = client.getOutputStream();
             BufferedOutputStream out = new BufferedOutputStream(os);//不能使用dataoutputStream，由于data传送的是byte类型，byte的范围-127-127,不符合
@@ -199,10 +200,15 @@ public class SocketClient {
                 MyUtils.clearList(msg);//发送成功后清空报文数据
 
             }
-            return in.readLine();//阻塞直到读取到换行，读取响应的字符串
+            int data;
+            while ((data=in.read())!='\n'){ //判断接收到换行后停止
+                resultMsg.add(data);
+            }
+            Log.i("接收到的参数报文",Arrays.toString(resultMsg.toArray()));
+            return resultMsg;//阻塞直到读取到换行，读取响应的字符串
         } catch (IOException e) {
             e.printStackTrace();
-            return "void";
+            return null;
         } finally {
 
         }

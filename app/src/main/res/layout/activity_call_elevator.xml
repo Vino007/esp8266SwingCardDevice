@@ -11,12 +11,15 @@
 
         ></ListView>
     <GridView
+        android:layout_marginTop="20dp"
         android:id="@+id/call_elevator_gridview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:numColumns="4"
+        android:layout_gravity="center"
         android:gravity="center_horizontal"
-
+        android:horizontalSpacing="20dp"
+        android:verticalSpacing="20dp"
         ></GridView>
 
 

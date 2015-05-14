@@ -252,14 +252,16 @@ public class MainActivity extends ActionBarActivity {
             if (msg.what == 0X01) {
                 Toast.makeText(MainActivity.this, "发送命令成功", Toast.LENGTH_SHORT).show();
                 if (msg.obj != null) {
-                    receive_data_textview.setText((String) msg.obj);
+                    List<Integer> parameterContents = (List<Integer>) msg.obj;
+                    receive_data_textview.setText((Arrays.toString(parameterContents.toArray())));
                     Toast.makeText(MainActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
                     items_lv.clear();
-                    String parameterContents = (String) msg.obj;
+
+                    Log.i("接收到的报文",Arrays.toString(parameterContents.toArray()));
                     for (int i = 0; i < 3; i++) {
                         Map<String, Object> item = new HashMap<String, Object>();
                         item.put("parameterName", parameterNames[i]);
-                        item.put("parameterContent", parameterContents);
+                        item.put("parameterContent", parameterContents.get(i));
                         items_lv.add(item);
                     }
                     simpleAdapter_lv.notifyDataSetChanged();
@@ -322,7 +324,7 @@ public class MainActivity extends ActionBarActivity {
     class ReadMessageThread implements Runnable {
         @Override
         public void run() {
-            String result = client.readMessage(message);
+            List<Integer> result = client.readMessage(message);
             Message msg = handler.obtainMessage();
             msg.what = 0X01;//发送报文成功
             msg.obj = result;

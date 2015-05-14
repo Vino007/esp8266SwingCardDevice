@@ -13,7 +13,6 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.vino.utils.MyApplication;
-import com.example.vino.utils.ReadParameterSetting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +124,7 @@ public class CallElevatorActivity extends ActionBarActivity {
             /**
              *
              */
-            ReadParameterSetting readParameterSetting = new ReadParameterSetting(message);
+         /*   ReadParameterSetting readParameterSetting = new ReadParameterSetting(message);
             message = readParameterSetting.readAll();
             result = client.readMessage(message);
             msg=handler.obtainMessage();
@@ -133,7 +132,7 @@ public class CallElevatorActivity extends ActionBarActivity {
                msg.what = 0x01;//接收成功
                msg.obj = result;
                handler.sendMessage(msg);
-           }
+           }*/
         }
 
     }
