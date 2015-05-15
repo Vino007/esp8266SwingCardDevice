@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.example.vino.utils.MessageHandler;
 import com.example.vino.utils.MyApplication;
 
 import java.util.ArrayList;
@@ -42,12 +43,11 @@ public class CallElevatorActivity extends ActionBarActivity {
 
         handler = new MyHandler();
         //初始化报文
-        for (int i = 0; i < 9; i++)
-            message.add(0x00);
+        message= MessageHandler.initMessage();
 
         gv = (GridView) findViewById(R.id.call_elevator_gridview);
-        parameter_lv = (ListView) findViewById(R.id.call_elevator_listview);
-        initListView();
+   //     parameter_lv = (ListView) findViewById(R.id.call_elevator_listview);
+   //     initListView();
         initGridView();
     }
 

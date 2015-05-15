@@ -1,16 +1,19 @@
 package com.example.vino.esp8266test;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vino.utils.MessageHandler;
@@ -28,19 +31,20 @@ import java.util.Map;
  * 0x01：发送命令成功
  * 0x02: 建立连接成功
  * 0x03: 建立连接失败
+ * 0x04: 连接已断开，即socketclient为null或close
+ * if (MyUtils.isWifiConnect(SettingActivity.this) && connectStatus)
+ * if (client != null && !client.isClose())
+ * 两重判断，第一个判断wifi是否连接，第二个判断socket是否建立
  */
 public class MainActivity extends ActionBarActivity {
-
-    private Button connect_btn;
 
     private Button readParameter_btn;
     private Button setting_btn;
     private Handler handler;
-    private TextView receive_data_textview;
+   // private TextView receive_data_textview;
     private ListView parameter_lv;
-    private boolean connectStatus = false;
-    private List<Integer> message = new ArrayList<>();//报文存储
 
+    private List<Integer> message = new ArrayList<>();//报文存储
     private SocketClient client = null;
     private MyApplication application;
     private String[] parameterNames = {"刷卡器时间:", "刷卡时段:", "工作模式:"};
@@ -53,36 +57,62 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        connect_btn = (Button) findViewById(R.id.connect_btn);
-
         readParameter_btn = (Button) findViewById(R.id.readParameter_btn);
-        setting_btn= (Button) findViewById(R.id.setting_btn);
-
-
-        receive_data_textview = (TextView) findViewById(R.id.receive_data_textview);
+        setting_btn = (Button) findViewById(R.id.setting_btn);
+       // receive_data_textview = (TextView) findViewById(R.id.receive_data_textview);
         Log.d("start", "正常启动");
         handler = new MyHandler();
         //初始化下行报文
-        for (int i = 0; i < 9; i++)
-            message.add(0x00);
+        message= MessageHandler.initMessage();
         application = (MyApplication) MainActivity.this.getApplication();
         parameter_lv = (ListView) findViewById(R.id.main_listview);
         initListView();
 
         /******************************监听器************************************/
-
+        /**
+         * 要求输入密码，由alertdialog实现
+         */
         setting_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                startActivity(intent);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("请输入密码");
+                //    通过LayoutInflater来加载一个xml的布局文件作为一个View对象
+                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.password_dialog, null);
+                //    设置我们自己定义的布局文件作为弹出框的Content
+                builder.setView(view);
+
+                final EditText password_edit = (EditText) view.findViewById(R.id.password_edit);
+
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        String password = password_edit.getText().toString().trim();
+                        if (password.equals("1234")) {
+
+                            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                            startActivity(intent);
+                        } else
+                            Toast.makeText(MainActivity.this, " 密码错误", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.show();
             }
+
         });
 
         readParameter_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (MyUtils.isWifiConnect(MainActivity.this)&&connectStatus) {
+                if (MyUtils.isWifiConnect(MainActivity.this)) {
                     ReadParameterSetting readParameterSetting = new ReadParameterSetting(message);
                     message = readParameterSetting.readAll();
                     ReadMessageThread readMessageThread = new ReadMessageThread();
@@ -94,28 +124,6 @@ public class MainActivity extends ActionBarActivity {
         });
 
 
-
-        connect_btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (MyUtils.isWifiConnect(MainActivity.this)) {
-                    if (!connectStatus) {
-                        ConnectThread connectThread = new ConnectThread();
-                        Thread thread = new Thread(connectThread);
-                        thread.start();
-                    } else {
-                        client.close();
-                        connectStatus = false;
-                        connect_btn.setText("connect");
-                    }
-                } else
-                    Toast.makeText(MainActivity.this, "请先连接对应的wifi", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-
     }
 
 
@@ -123,7 +131,7 @@ public class MainActivity extends ActionBarActivity {
      * 初始化listView
      */
     public void initListView() {
-        items_lv = new ArrayList<Map<String, Object>>();
+        items_lv = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             Map<String, Object> item = new HashMap<String, Object>();
             item.put("parameterName", parameterNames[i]);
@@ -146,12 +154,12 @@ public class MainActivity extends ActionBarActivity {
                 Toast.makeText(MainActivity.this, "发送命令成功", Toast.LENGTH_SHORT).show();
                 if (msg.obj != null) {
                     List<Integer> resultMessage = (List<Integer>) msg.obj;
-                    parameterContents= MessageHandler.messageHandle(resultMessage);
-                    receive_data_textview.setText((Arrays.toString(resultMessage.toArray())));
+                    parameterContents = MessageHandler.messageHandle(resultMessage);
+                 //   receive_data_textview.setText((Arrays.toString(resultMessage.toArray())));
                     Toast.makeText(MainActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
                     items_lv.clear();
 
-                    Log.i("接收到的报文",Arrays.toString(resultMessage.toArray()));
+                    Log.i("接收到的报文", Arrays.toString(resultMessage.toArray()));
                     for (int i = 0; i < 3; i++) {
                         Map<String, Object> item = new HashMap<String, Object>();
                         item.put("parameterName", parameterNames[i]);
@@ -161,18 +169,10 @@ public class MainActivity extends ActionBarActivity {
                     simpleAdapter_lv.notifyDataSetChanged();
                 }
 
-            } else if (msg.what == 0x02) {//连接成功
-                connect_btn.setText("disconnect");
-                connectStatus = true;
-                application.setConnectStatus(true);
-                Toast.makeText(MainActivity.this, "连接成功", Toast.LENGTH_LONG).show();
-
-            } else if (msg.what == 0x03) {//连接失败
-                connect_btn.setText("connect");
-                connectStatus = false;
-                application.setConnectStatus(false);
-                Toast.makeText(MainActivity.this, "创建连接失败，请确认是否连接对正确的wifi", Toast.LENGTH_SHORT).show();
+            } else if (msg.what == 0x04) {
+                Toast.makeText(MainActivity.this, "连接已断开，请返回上层重新连接", Toast.LENGTH_LONG).show();
             }
+
         }
     }
 
@@ -180,53 +180,21 @@ public class MainActivity extends ActionBarActivity {
      * ******************************线程********************************************
      */
 
-    class ConnectThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                client = new SocketClient("192.168.4.1", 8080);
-
-                application.setClient(client);
-                application.setConnectStatus(true);
-                Message msg = handler.obtainMessage();
-                msg.what = 0x02;//成功
-                handler.sendMessage(msg);
-
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                application.setConnectStatus(false);
-                Log.e("error", "SocketClient构造器出错");
-                Message msg = handler.obtainMessage();
-                msg.what = 0x03;//创建连接失败
-                handler.sendMessage(msg);
-            }
-        }
-    }
-
-    class SendMessageThread implements Runnable {
-        @Override
-        public void run() {
-            String result = "";
-            // String result = client.sendMessage(send_data_textview.getText().toString().trim());
-            client.sendMessage(message);//无返回值，不读取模块返回的信息
-
-            Message msg = handler.obtainMessage();
-            msg.what = 0X01;//发送报文成功
-            msg.obj = result;
-
-            handler.sendMessage(msg);
-        }
-
-    }
-
     class ReadMessageThread implements Runnable {
         @Override
         public void run() {
-            List<Integer> result = client.readMessage(message);
             Message msg = handler.obtainMessage();
-            msg.what = 0X01;//发送报文成功
-            msg.obj = result;
-            handler.sendMessage(msg);
+            client=application.getClient();
+            if (client != null && !client.isClose()) { //判断socket连接是否还存在
+                client = application.getClient();
+                List<Integer> result = client.readMessage(message);
+                msg.what = 0X01;//发送报文成功
+                msg.obj = result;
+                handler.sendMessage(msg);
+            } else {
+                msg.what = 0x04;
+                handler.sendMessage(msg);
+            }
         }
 
     }

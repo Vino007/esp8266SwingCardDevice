@@ -1,12 +1,23 @@
 package com.example.vino.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Joker on 2015/5/14.
  */
 public class MessageHandler {
+    /**
+     * 初始化报文
+     * @return
+     */
+    public static List<Integer> initMessage(){
+        List<Integer> message=new ArrayList<>();
+        for (int i = 0; i < 9; i++)
+            message.add(0xff);
+        return message;
 
+    }
     /**
      * 处理接收到的报文信息，将处理后的信息回传给listview显示
      * @param msg 接收到的报文

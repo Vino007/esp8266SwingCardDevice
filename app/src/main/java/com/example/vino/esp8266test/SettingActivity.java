@@ -8,9 +8,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.example.vino.utils.MessageHandler;
 import com.example.vino.utils.MyApplication;
 import com.example.vino.utils.MyUtils;
 import com.example.vino.utils.SwingCardSetting;
@@ -36,6 +40,8 @@ public class SettingActivity extends ActionBarActivity {
     private Button setBeginTime_btn;
     private Button setEndTime_btn;
     private Button send_btn;
+    private ToggleButton time_toggle_btn;
+    private Switch time_switch;
     private RadioGroup selectMode_group;
     private Button setMode_btn;
     private Button setDate_btn;
@@ -58,6 +64,7 @@ public class SettingActivity extends ActionBarActivity {
         setMode_btn = (Button) findViewById(R.id.setMode_btn);
         setDate_btn = (Button) findViewById(R.id.setDate_btn);
         setTime_btn = (Button) findViewById(R.id.setTime_btn);
+        time_switch= (Switch) findViewById(R.id.time_switch);
         callElevator_btn = (Button) findViewById(R.id.call_elevator_btn);
         selectMode_group = (RadioGroup) findViewById(R.id.selectMode_group);
         application = (MyApplication) SettingActivity.this.getApplication();
@@ -65,8 +72,14 @@ public class SettingActivity extends ActionBarActivity {
         Log.d("start", "正常启动");
         handler = new MyHandler();
         //初始化下行报文
-        for (int i = 0; i < 9; i++)
-            message.add(0x00);
+        message= MessageHandler.initMessage();
+        time_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    SwingCardSetting swingCardSetting=new SwingCardSetting(message);
+                    swingCardSetting.setEnableSwingCard(isChecked);
+            }
+        });
 
         callElevator_btn.setOnClickListener(new View.OnClickListener() {
             @Override

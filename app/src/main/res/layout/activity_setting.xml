@@ -1,5 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
+    android:padding="10dp"
     android:layout_height="wrap_content"
     android:scrollbars="vertical">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -11,7 +12,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:text="设置刷卡时段" />
 
     <LinearLayout
@@ -36,7 +38,18 @@
 
     </LinearLayout>
 
+    <Switch
+        android:id="@+id/time_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOn="允许刷卡"
+        android:textOff="禁止刷卡"
+        android:checked="true"
+
+        />
     <TextView
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
@@ -64,11 +77,14 @@
     </LinearLayout>
 
     <TextView
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="设置工作模式" />
 
     <RadioGroup
+        android:layout_marginTop="10dp"
         android:id="@+id/selectMode_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -102,12 +118,14 @@
 
 
     <Button
+        android:layout_marginTop="10dp"
         android:id="@+id/setMode_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="确定选择该模式" />
 
     <Button
+        android:layout_marginTop="10dp"
         android:id="@+id/call_elevator_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -116,6 +134,7 @@
 
 
     <Button
+        android:layout_marginTop="10dp"
         android:id="@+id/send_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
