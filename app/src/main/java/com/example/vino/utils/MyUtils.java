@@ -14,7 +14,7 @@ public class MyUtils {
     public static void clearList(List list) {
         if (list != null) {
             for (int i = 0; i < list.size(); i++) {
-                list.set(i, 0);
+                list.set(i, 0xff);
             }
         }
 
@@ -39,5 +39,12 @@ public class MyUtils {
 
         }
         return isWifi;
+    }
+    public static int decToBcd(int dec){
+        int high=dec/10;
+        int low=dec%10;
+
+        return high*16+low;
+
     }
 }

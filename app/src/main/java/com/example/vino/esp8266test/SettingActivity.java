@@ -103,14 +103,21 @@ public class SettingActivity extends ActionBarActivity {
                 message = timedialogUtils.showDatepickerDialog();
             }
         });
-
+        /**
+         * 当允许刷卡的时候才可以设置时间，默认时间为2200-800，禁止刷卡时，直接点发送命令即可
+         */
         setBeginTime_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TimedialogUtils timedialogUtils = new TimedialogUtils(SettingActivity.this, message);
-                message = timedialogUtils.showTimepickerDialog("beginTime");
+                if(time_switch.isChecked()){
+                    message = timedialogUtils.showTimepickerDialog("beginTime");
+                    message.set(6,0xee);}
+                else {
 
+                    Toast.makeText(SettingActivity.this, "请先开启时段再设置时间", Toast.LENGTH_SHORT).show();
 
+                }
             }
         });
 
@@ -118,12 +125,20 @@ public class SettingActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 TimedialogUtils timedialogUtils = new TimedialogUtils(SettingActivity.this, message);
-                message = timedialogUtils.showTimepickerDialog("endTime");
+                if (time_switch.isChecked()) {
+                    message = timedialogUtils.showTimepickerDialog("endTime");
+                    message.set(6, 0xee);
+                } else {
+
+                    Toast.makeText(SettingActivity.this, "请先开启时段再设置时间", Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
 
 
         setMode_btn.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
 
@@ -147,6 +162,7 @@ public class SettingActivity extends ActionBarActivity {
                 }
                 Log.i("workMode", workMode + "");
                 if (workMode != -1) {
+                    message=MessageHandler.initMessage();
                     SwingCardSetting swingCardSetting = new SwingCardSetting(message);
                     message = swingCardSetting.setMode(workMode);
                 }

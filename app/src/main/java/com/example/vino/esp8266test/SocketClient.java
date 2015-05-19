@@ -104,6 +104,19 @@ public class SocketClient {
         }
     }
 
+    public List<Integer> sumCheck(List<Integer> msg){
+
+        Integer sum=0;
+        for(int i=0;i<msg.size()-2;i++){
+            sum=sum+msg.get(i);
+        }
+        Integer addh=sum/256;
+        Integer addl=sum%256;
+        msg.set(msg.size() - 2, addh);
+        msg.set(msg.size() - 1, addl);
+        return  msg;
+    }
+
     /**
      * 下行报文的crc校验
      *
@@ -147,7 +160,7 @@ public class SocketClient {
 
     public void sendMessage(List<Integer> msg) {
 
-        msg = crc(msg);//添加crc校验
+        msg = sumCheck(msg);//添加和校验
         try {
             os = client.getOutputStream();
             BufferedOutputStream out = new BufferedOutputStream(os);//不能使用dataoutputStream，由于data传送的是byte类型，byte的范围-127-127,不符合
@@ -169,7 +182,7 @@ public class SocketClient {
             e.printStackTrace();
         } finally {
 
-            //  return "";
+
         }
     }
 

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.vino.utils.MessageHandler;
 import com.example.vino.utils.MyApplication;
+import com.example.vino.utils.MyUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class CallElevatorActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {//positiion从0开始
                 message.set(0, 0xf1);
                 message.set(1, 0x04);
-                message.set(2, position + 1);
+                message.set(2, MyUtils.decToBcd(position + 1));
                 //在设置crc校验
                 //获取全局的client实例
                 application = (MyApplication) CallElevatorActivity.this.getApplication();

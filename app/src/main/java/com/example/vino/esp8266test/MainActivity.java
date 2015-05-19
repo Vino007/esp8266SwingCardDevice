@@ -3,6 +3,7 @@ package com.example.vino.esp8266test;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
     private Button readParameter_btn;
     private Button setting_btn;
     private Handler handler;
-   // private TextView receive_data_textview;
+
     private ListView parameter_lv;
 
     private List<Integer> message = new ArrayList<>();//报文存储
@@ -59,7 +60,7 @@ public class MainActivity extends ActionBarActivity {
 
         readParameter_btn = (Button) findViewById(R.id.readParameter_btn);
         setting_btn = (Button) findViewById(R.id.setting_btn);
-       // receive_data_textview = (TextView) findViewById(R.id.receive_data_textview);
+
         Log.d("start", "正常启动");
         handler = new MyHandler();
         //初始化下行报文
@@ -76,35 +77,45 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("请输入密码");
-                //    通过LayoutInflater来加载一个xml的布局文件作为一个View对象
-                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.password_dialog, null);
-                //    设置我们自己定义的布局文件作为弹出框的Content
-                builder.setView(view);
+                SharedPreferences sf=getSharedPreferences("passwordData", MODE_PRIVATE);
+                String pwdFromSharedPre=sf.getString("password","0");
+                if(pwdFromSharedPre.equals("1")){
+                    Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                    startActivity(intent);
+                }else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("请输入密码");
+                    //    通过LayoutInflater来加载一个xml的布局文件作为一个View对象
+                    View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.password_dialog, null);
+                    //    设置我们自己定义的布局文件作为弹出框的Content
+                    builder.setView(view);
 
-                final EditText password_edit = (EditText) view.findViewById(R.id.password_edit);
+                    final EditText password_edit = (EditText) view.findViewById(R.id.password_edit);
 
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-                        String password = password_edit.getText().toString().trim();
-                        if (password.equals("1234")) {
+                            String password = password_edit.getText().toString().trim();
+                            if (password.equals("1")) {
 
-                            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                            startActivity(intent);
-                        } else
-                            Toast.makeText(MainActivity.this, " 密码错误", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences.Editor editor = getSharedPreferences("passwordData", MODE_PRIVATE).edit();
+                                editor.putString("password", password);
+                                editor.commit();
+                                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                                startActivity(intent);
+                            } else
+                                Toast.makeText(MainActivity.this, " 密码错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                });
-                builder.show();
+                        }
+                    });
+                    builder.show();
+                }
             }
 
         });

@@ -36,15 +36,17 @@ public class TimedialogUtils {
         DatePickerDialog dialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                msg.set(2, year-2000);
-                msg.set(3, monthOfYear + 1);//月份是从0开始的
-                msg.set(4, dayOfMonth);
+
+                msg.set(2, MyUtils.decToBcd(year-2000));
+                msg.set(3, MyUtils.decToBcd(monthOfYear + 1));//月份是从0开始的
+                msg.set(4, MyUtils.decToBcd(dayOfMonth));
 
             }
         }, year, month, day);
         dialog.show();
         return msg;
     }
+
 
     /**
      * @param timeType deviceTime表示设备的时钟，beginTime表示刷卡开始时间,endTime表示刷卡结束时间
@@ -63,19 +65,19 @@ public class TimedialogUtils {
                 Log.i("hour", hourOfDay + "");
                 if (type.equals("beginTime")) {
                     msg.set(1, 0x02);
-                    msg.set(2, hourOfDay);
-                    msg.set(3, minute);
+                    msg.set(2, MyUtils.decToBcd(hourOfDay));
+                    msg.set(3, MyUtils.decToBcd(minute));
 
                     Log.i("beginTime", msg.get(2) + ":" + msg.get(3));
 
                 } else if (type.equals("endTime")) {
                     msg.set(1, 0x02);
-                    msg.set(4, hourOfDay);
-                    msg.set(5, minute);
+                    msg.set(4, MyUtils.decToBcd(hourOfDay));
+                    msg.set(5, MyUtils.decToBcd(minute));
                     Log.i("endTime", msg.get(4) + ":" + msg.get(5));
                 } else if (type.equals("deviceTime")) {
-                    msg.set(5, hourOfDay);
-                    msg.set(6, minute);
+                    msg.set(5, MyUtils.decToBcd(hourOfDay));
+                    msg.set(6, MyUtils.decToBcd(minute));
                     Log.i("deviceTime", msg.get(5) + ":" + msg.get(6));
                 }
             }
