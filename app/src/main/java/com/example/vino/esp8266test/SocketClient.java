@@ -104,6 +104,11 @@ public class SocketClient {
         }
     }
 
+    /**
+     * 和校验
+     * @param msg
+     * @return
+     */
     public List<Integer> sumCheck(List<Integer> msg){
 
         Integer sum=0;

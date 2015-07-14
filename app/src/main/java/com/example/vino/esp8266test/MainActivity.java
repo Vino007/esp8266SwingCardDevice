@@ -166,7 +166,7 @@ public class MainActivity extends ActionBarActivity {
                 if (msg.obj != null) {
                     List<Integer> resultMessage = (List<Integer>) msg.obj;
                     parameterContents = MessageHandler.messageHandle(resultMessage);
-                 //   receive_data_textview.setText((Arrays.toString(resultMessage.toArray())));
+
                     Toast.makeText(MainActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
                     items_lv.clear();
 
