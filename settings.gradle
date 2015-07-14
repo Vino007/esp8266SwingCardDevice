@@ -1,1 +1,1 @@
-include ':app', ':learnandroid', ':learnfragment', ':learnsqlite', ':learnboardcast', ':learnjson', ':learncustomview'
+include ':app'
