@@ -29,7 +29,7 @@ public class MessageHandler {
          * 进行和校验
          */
 
-        String[] parameterContents = {"无", "无", "无"};
+        String[] parameterContents = {"", "", "",""};
 
 
         /**
@@ -68,6 +68,11 @@ public class MessageHandler {
         parameterContents[0]="20"+year+"年"+month+"月"+day+"日  "+hour+":"+minute;
         parameterContents[1]=startHour+":"+startMinute+"-"+endHour+":"+endMinute;
         parameterContents[2]=model;
+        if(msg.get(9)==0x00&&msg.get(10)==0x00&&msg.get(11)==0x00&&msg.get(12)==0x00)
+            parameterContents[3]="开启";
+        else
+            parameterContents[3]="关闭";
+
     return parameterContents;
     }
 

@@ -35,14 +35,14 @@ public class SwingCardSetting {
             msg.set(3,0x00);
             msg.set(4,0x08);
             msg.set(5,0x00);
-            msg.set(6, 0xee);
+            msg.set(6,0xee);
         }else {
             msg.set(1,0x02);
             msg.set(2,0x22);
             msg.set(3,0x00);
             msg.set(4,0x08);
             msg.set(5,0x00);
-            msg.set(6, 0x00);
+            msg.set(6,0x00);
         }
         return msg;
     }

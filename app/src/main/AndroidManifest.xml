@@ -21,7 +21,11 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".CallElevatorActivity"
@@ -30,15 +34,16 @@
         <activity
             android:name=".SettingActivity"
             android:label="@string/title_activity_setting" >
+
         </activity>
         <activity
             android:name=".ConnectActivity"
             android:label="@string/title_activity_connect" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SettingSelectActivity"
+            android:label="@string/title_activity_setting_select" >
         </activity>
     </application>
 

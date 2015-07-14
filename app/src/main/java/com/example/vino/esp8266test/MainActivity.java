@@ -48,8 +48,9 @@ public class MainActivity extends ActionBarActivity {
     private List<Integer> message = new ArrayList<>();//报文存储
     private SocketClient client = null;
     private MyApplication application;
-    private String[] parameterNames = {"刷卡器时间:", "刷卡时段:", "工作模式:"};
-    private String[] parameterContents = {"无", "无", "无"};
+    private String[] parameterNames = {"刷卡器时间:", "刷卡时段:", "工作模式:","门禁:"};
+    private String[] parameterContents = {"", "", "",""};
+
     private List<Map<String, Object>> items_lv;
     private SimpleAdapter simpleAdapter_lv;
 
@@ -143,7 +144,7 @@ public class MainActivity extends ActionBarActivity {
      */
     public void initListView() {
         items_lv = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < parameterNames.length; i++) {
             Map<String, Object> item = new HashMap<String, Object>();
             item.put("parameterName", parameterNames[i]);
             item.put("parameterContent", parameterContents[i]);
@@ -167,11 +168,11 @@ public class MainActivity extends ActionBarActivity {
                     List<Integer> resultMessage = (List<Integer>) msg.obj;
                     parameterContents = MessageHandler.messageHandle(resultMessage);
 
-                    Toast.makeText(MainActivity.this, "接收到模块参数", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "接收到设备信息", Toast.LENGTH_SHORT).show();
                     items_lv.clear();
 
                     Log.i("接收到的报文", Arrays.toString(resultMessage.toArray()));
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < parameterNames.length; i++) {
                         Map<String, Object> item = new HashMap<String, Object>();
                         item.put("parameterName", parameterNames[i]);
                         item.put("parameterContent", parameterContents[i]);

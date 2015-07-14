@@ -1,5 +1,7 @@
 package com.example.vino.esp8266test;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,10 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.vino.utils.MessageHandler;
 import com.example.vino.utils.MyApplication;
@@ -40,14 +40,15 @@ public class SettingActivity extends ActionBarActivity {
     private Button setBeginTime_btn;
     private Button setEndTime_btn;
     private Button send_btn;
-    private ToggleButton time_toggle_btn;
+
     private Switch time_switch;
-    private RadioGroup selectMode_group;
-    private Button setMode_btn;
+
+
     private Button setDate_btn;
     private Button setTime_btn;
     private Button callElevator_btn;
-    private List<Integer> message = new ArrayList<Integer>();//报文存储
+    private Button btnSetMode;
+    private List<Integer> message = new ArrayList<>();//报文存储
     private int workMode = -1;//工作模式
     private SocketClient client = null;
     private MyApplication application;
@@ -61,23 +62,66 @@ public class SettingActivity extends ActionBarActivity {
         send_btn = (Button) findViewById(R.id.send_btn);
         setBeginTime_btn = (Button) findViewById(R.id.setBeginTime_btn);
         setEndTime_btn = (Button) findViewById(R.id.setEndTime_btn);
-        setMode_btn = (Button) findViewById(R.id.setMode_btn);
+
         setDate_btn = (Button) findViewById(R.id.setDate_btn);
         setTime_btn = (Button) findViewById(R.id.setTime_btn);
         time_switch= (Switch) findViewById(R.id.time_switch);
+        btnSetMode= (Button) findViewById(R.id.btnSetMode);
+
         callElevator_btn = (Button) findViewById(R.id.call_elevator_btn);
-        selectMode_group = (RadioGroup) findViewById(R.id.selectMode_group);
+
         application = (MyApplication) SettingActivity.this.getApplication();
         connectStatus = application.getConnectStatus();
         Log.d("start", "正常启动");
         handler = new MyHandler();
         //初始化下行报文
         message= MessageHandler.initMessage();
+
+
+
+        btnSetMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder dialog=new AlertDialog.Builder(SettingActivity.this);
+                dialog.setTitle("选择模式");
+                dialog.setCancelable(true);
+                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (workMode != -1) {
+                            message = MessageHandler.initMessage();
+                            SwingCardSetting swingCardSetting = new SwingCardSetting(message);
+                            message = swingCardSetting.setMode(workMode);
+                            Toast.makeText(SettingActivity.this, "设置完成，请点击发送命令", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                String[] items={"模式1:只刷卡,密码无效","模式2:只刷卡,密码无效,具有计次功能","模式3:刷卡,密码有效","模式4:刷卡,密码有效,卡片带时间限制"};
+                dialog.setSingleChoiceItems(items,-1,new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.i("which",which+"");
+                        workMode=which+1;
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
+
         time_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     SwingCardSetting swingCardSetting=new SwingCardSetting(message);
                     swingCardSetting.setEnableSwingCard(isChecked);
+                Toast.makeText(SettingActivity.this,"设置完成，请点击发送命令",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -137,38 +181,6 @@ public class SettingActivity extends ActionBarActivity {
         });
 
 
-        setMode_btn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                int selectId = selectMode_group.getCheckedRadioButtonId();
-                Log.i("selectId", selectId + "");
-                switch (selectId) {
-                    case R.id.mode1_rbtn:
-                        workMode = 1;
-                        break;
-                    case R.id.mode2_rbtn:
-                        workMode = 2;
-                        break;
-                    case R.id.mode3_rbtn:
-                        workMode = 3;
-                        break;
-                    case R.id.mode4_rbtn:
-                        workMode = 4;
-                        break;
-                    default:
-                        workMode = -1;
-                }
-                Log.i("workMode", workMode + "");
-                if (workMode != -1) {
-                    message=MessageHandler.initMessage();
-                    SwingCardSetting swingCardSetting = new SwingCardSetting(message);
-                    message = swingCardSetting.setMode(workMode);
-                }
-
-            }
-        });
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

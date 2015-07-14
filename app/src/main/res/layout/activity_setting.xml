@@ -37,7 +37,13 @@
             android:text="设置结束时间" />
 
     </LinearLayout>
+    <TextView
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
+        android:text="设置门禁" />
     <Switch
         android:id="@+id/time_switch"
         android:layout_width="wrap_content"
@@ -83,46 +89,13 @@
         android:layout_height="wrap_content"
         android:text="设置工作模式" />
 
-    <RadioGroup
-        android:layout_marginTop="10dp"
-        android:id="@+id/selectMode_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/mode1_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式一" />
-
-        <RadioButton
-            android:id="@+id/mode2_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式二" />
-
-        <RadioButton
-            android:id="@+id/mode3_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式三" />
-
-        <RadioButton
-            android:id="@+id/mode4_rbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="模式四" />
-
-    </RadioGroup>
 
 
     <Button
-        android:layout_marginTop="10dp"
-        android:id="@+id/setMode_btn"
+        android:id="@+id/btnSetMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="确定选择该模式" />
+        android:text="设置模式"/>
 
     <Button
         android:layout_marginTop="10dp"

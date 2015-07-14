@@ -8,4 +8,5 @@
     <string name="title_activity_connect">电梯刷卡器</string>
     <string name="welcome_slogan">欢迎使用电梯刷卡器APP</string>
     <string name="click_connect">请点击下方连接按钮进行操作</string>
+    <string name="title_activity_setting_select">SettingSelectActivity</string>
 </resources>
