@@ -1,9 +1,9 @@
 package com.example.vino.esp8266test;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,7 +25,7 @@ import java.util.Map;
  * 0x10: 呼梯成功
  * 0x01: 发送命令成功
  */
-public class CallElevatorActivity extends ActionBarActivity {
+public class CallElevatorActivity extends Activity {
     private GridView gv;
     private ListView parameter_lv;
     private List<Integer> message = new ArrayList<Integer>();//报文存储
@@ -41,6 +41,8 @@ public class CallElevatorActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call_elevator);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         handler = new MyHandler();
         //初始化报文

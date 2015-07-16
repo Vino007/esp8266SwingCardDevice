@@ -1,11 +1,11 @@
 package com.example.vino.esp8266test;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +39,7 @@ import java.util.List;
  *  if (client != null && !client.isClose())
  *  两重判断，第一个判断wifi是否连接，第二个判断socket是否建立
  */
-public class SettingActivity extends ActionBarActivity {
+public class SettingActivity extends Activity {
     private Button setBeginTime_btn;
     private Button setEndTime_btn;
     private Button send_btn;
@@ -59,6 +59,11 @@ public class SettingActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
         send_btn = (Button) findViewById(R.id.send_btn);
         setBeginTime_btn = (Button) findViewById(R.id.setBeginTime_btn);
         setEndTime_btn = (Button) findViewById(R.id.setEndTime_btn);
@@ -76,6 +81,8 @@ public class SettingActivity extends ActionBarActivity {
         handler = new MyHandler();
         //初始化下行报文
         message= MessageHandler.initMessage();
+
+
 
 
 

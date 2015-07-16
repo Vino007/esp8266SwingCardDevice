@@ -1,5 +1,6 @@
 package com.example.vino.esp8266test;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +37,7 @@ import java.util.Map;
  * if (client != null && !client.isClose())
  * 两重判断，第一个判断wifi是否连接，第二个判断socket是否建立
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     private Button readParameter_btn;
     private Button setting_btn;
@@ -58,6 +58,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);//添加返回button
 
         readParameter_btn = (Button) findViewById(R.id.readParameter_btn);
         setting_btn = (Button) findViewById(R.id.setting_btn);
@@ -80,12 +82,12 @@ public class MainActivity extends ActionBarActivity {
 
                 SharedPreferences sf=getSharedPreferences("passwordData", MODE_PRIVATE);
                 String pwdFromSharedPre=sf.getString("password","0");
-                if(pwdFromSharedPre.equals("1")){
+                if(pwdFromSharedPre.equals(MainActivity.this.getResources().getText(R.string.password))){
                     Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                     startActivity(intent);
                 }else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setTitle("请输入密码");
+                    builder.setTitle(MainActivity.this.getResources().getText(R.string.passwordTitle));
                     //    通过LayoutInflater来加载一个xml的布局文件作为一个View对象
                     View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.password_dialog, null);
                     //    设置我们自己定义的布局文件作为弹出框的Content
@@ -93,12 +95,12 @@ public class MainActivity extends ActionBarActivity {
 
                     final EditText password_edit = (EditText) view.findViewById(R.id.password_edit);
 
-                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(MainActivity.this.getResources().getText(R.string.confirm), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
                             String password = password_edit.getText().toString().trim();
-                            if (password.equals("1")) {
+                            if (password.equals(MainActivity.this.getResources().getText(R.string.password))) {
 
                                 SharedPreferences.Editor editor = getSharedPreferences("passwordData", MODE_PRIVATE).edit();
                                 editor.putString("password", password);
@@ -109,7 +111,7 @@ public class MainActivity extends ActionBarActivity {
                                 Toast.makeText(MainActivity.this, " 密码错误", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(MainActivity.this.getResources().getText(R.string.cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 

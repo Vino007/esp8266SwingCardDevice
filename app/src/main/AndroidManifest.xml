@@ -1,26 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vino.esp8266test" >
+    package="com.example.vino.esp8266test">
 
     <!-- 使用网络功能所需权限 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.INTERNET" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" >
-    </uses-permission>
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+    <!-- 指定了actionbar的logo,针对不使用support库,在application中指定了整个应用的logo，可以再activity中针对性的指定-->
     <application
         android:name="com.example.vino.utils.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/device_logo"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:logo="@mipmap/device_logo"
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName="com.example.vino.esp8266test.ConnectActivity">
+            <!--  meta-data 用于支持 support 4.0 以及以下来指明上级活动 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.vino.esp8266test.ConnectActivity" />
+
+        </activity>
+        <activity
+            android:name=".CallElevatorActivity"
+            android:label="@string/title_activity_call_elevator"
+            android:parentActivityName="com.example.vino.esp8266test.SettingActivity">
+            <!--  meta-data 用于支持 support 4.0 以及以下来指明上级活动 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.vino.esp8266test.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SettingActivity"
+            android:label="@string/title_activity_setting"
+            android:parentActivityName="com.example.vino.esp8266test.SettingActivity">
+
+            <!--  meta-data 用于支持 support 4.0 以及以下来指明上级活动 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.vino.esp8266test.MainActivity" />
+
+        </activity>
+        <activity
+            android:name=".ConnectActivity"
+            android:label="@string/title_activity_connect">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,23 +55,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CallElevatorActivity"
-            android:label="@string/title_activity_call_elevator" >
-        </activity>
-        <activity
-            android:name=".SettingActivity"
-            android:label="@string/title_activity_setting" >
-
-        </activity>
-        <activity
-            android:name=".ConnectActivity"
-            android:label="@string/title_activity_connect" >
-
-
-        </activity>
-        <activity
             android:name=".SettingSelectActivity"
-            android:label="@string/title_activity_setting_select" >
+            android:label="@string/title_activity_setting_select"
+            android:parentActivityName="com.example.vino.esp8266test.MainActivity">
+            <!--  meta-data 用于支持 support 4.0 以及以下来指明上级活动 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.vino.esp8266test.MainActivity" />
         </activity>
     </application>
 

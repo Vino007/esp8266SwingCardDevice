@@ -1,10 +1,10 @@
 package com.example.vino.esp8266test;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +24,7 @@ import com.example.vino.utils.MyUtils;
  *  if (client != null && !client.isClose())
  *  两重判断，第一个判断wifi是否连接，第二个判断socket是否建立
  */
-public class ConnectActivity extends ActionBarActivity {
+public class ConnectActivity extends Activity {
     private Button connect_btn;
     private Handler handler;
     private boolean connectStatus = false;
