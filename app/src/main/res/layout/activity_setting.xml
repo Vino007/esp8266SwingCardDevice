@@ -27,6 +27,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_btn"
+            android:layout_margin="5dp"
             android:text="设置开始时间" />
 
         <Button
@@ -34,6 +37,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_btn"
+            android:layout_margin="5dp"
             android:text="设置结束时间" />
 
     </LinearLayout>
@@ -71,14 +77,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="设置日期" />
+            android:text="设置日期"
+            android:layout_margin="5dp"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_btn"
+            />
 
         <Button
             android:id="@+id/setTime_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="设置时钟" />
+            android:text="设置时钟"
+            android:layout_margin="5dp"
+            android:textColor="@color/white"
+            android:background="@drawable/blue_btn"
+            />
 
     </LinearLayout>
 
@@ -87,7 +101,9 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="设置工作模式" />
+        android:text="设置工作模式"
+
+        />
 
 
 
@@ -95,14 +111,20 @@
         android:id="@+id/btnSetMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="设置模式"/>
+        android:text="设置模式"
+        android:textColor="@color/white"
+        android:background="@drawable/blue_btn"
+        />
 
     <Button
         android:layout_marginTop="10dp"
         android:id="@+id/call_elevator_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="呼梯" />
+        android:text="呼梯"
+        android:textColor="@color/white"
+        android:background="@drawable/green_btn"
+        />
 
 
 
@@ -112,7 +134,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:text="发送命令" />
+        android:text="发送命令"
+        android:background="@drawable/red_btn" />
 
 
 </LinearLayout>

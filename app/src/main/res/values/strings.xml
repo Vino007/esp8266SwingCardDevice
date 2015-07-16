@@ -9,4 +9,14 @@
     <string name="welcome_slogan">欢迎使用电梯刷卡器APP</string>
     <string name="click_connect">请点击下方连接按钮进行操作</string>
     <string name="title_activity_setting_select">SettingSelectActivity</string>
+    <string name="select_model_dialog_title">选择模式</string>
+
+    <string name="model_1">模式1:只刷卡,密码无效</string>
+    <string name="model_2">模式2:只刷卡,密码无效,具有计次功能</string>
+    <string name="model_3">模式3:刷卡,密码有效</string>
+    <string name="model_4">模式4:刷卡,密码有效,卡片带时间限制</string>
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+
+
 </resources>

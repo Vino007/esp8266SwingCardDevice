@@ -1,17 +1,19 @@
 package com.example.vino.esp8266test;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vino.utils.MessageHandler;
@@ -20,6 +22,7 @@ import com.example.vino.utils.MyUtils;
 import com.example.vino.utils.SwingCardSetting;
 import com.example.vino.utils.TimedialogUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,10 +43,7 @@ public class SettingActivity extends ActionBarActivity {
     private Button setBeginTime_btn;
     private Button setEndTime_btn;
     private Button send_btn;
-
     private Switch time_switch;
-
-
     private Button setDate_btn;
     private Button setTime_btn;
     private Button callElevator_btn;
@@ -83,9 +83,27 @@ public class SettingActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder dialog=new AlertDialog.Builder(SettingActivity.this);
-                dialog.setTitle("选择模式");
+               // dialog.setTitle("选择模式");
+                View view= LayoutInflater.from(SettingActivity.this).inflate(R.layout.select_model_dialog, null);
+                dialog.setView(view);
                 dialog.setCancelable(true);
-                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                RadioGroup mRadioGroup= (RadioGroup) view.findViewById(R.id.radioGroupSelectModelDialog);
+                mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                   @Override
+                   public void onCheckedChanged(RadioGroup group, int checkedId) {
+                       switch (checkedId){
+                           case R.id.radioBtnmModel_1:workMode=1;break;
+                           case R.id.radioBtnmModel_2:workMode=2;break;
+                           case R.id.radioBtnmModel_3:workMode=3;break;
+                           case R.id.radioBtnmModel_4:workMode=4;break;
+                           default:break;
+                       }
+
+                       Log.i("model",workMode+"");
+                   }
+               });
+
+               /* dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -101,17 +119,41 @@ public class SettingActivity extends ActionBarActivity {
                             Toast.makeText(SettingActivity.this, "设置完成，请点击发送命令", Toast.LENGTH_SHORT).show();
                         }
                     }
-                });
-                String[] items={"模式1:只刷卡,密码无效","模式2:只刷卡,密码无效,具有计次功能","模式3:刷卡,密码有效","模式4:刷卡,密码有效,卡片带时间限制"};
-                dialog.setSingleChoiceItems(items,-1,new DialogInterface.OnClickListener() {
+                });*/
+              //  String[] items={"模式1:只刷卡,密码无效","模式2:只刷卡,密码无效,具有计次功能","模式3:刷卡,密码有效","模式4:刷卡,密码有效,卡片带时间限制"};
+               /* dialog.setSingleChoiceItems(items,-1,new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.i("which",which+"");
                         workMode=which+1;
                     }
+                });*/
+
+                final AlertDialog alertDialog=dialog.show();//返回一个dialog对象
+
+                Button btnSelectModelDialogConfirm= (Button) view.findViewById(R.id.btnSelectModelDialogConfirm);
+                btnSelectModelDialogConfirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (workMode != -1) {
+                            message = MessageHandler.initMessage();
+                            SwingCardSetting swingCardSetting = new SwingCardSetting(message);
+                            message = swingCardSetting.setMode(workMode);
+                            Toast.makeText(SettingActivity.this, "设置完成，请点击发送命令", Toast.LENGTH_SHORT).show();
+                        }
+
+                        alertDialog.cancel();
+
+                    }
+                });
+                Button btnSelectModelDialogCancel= (Button) view.findViewById(R.id.btnSelectModelDialogCancel);
+                btnSelectModelDialogCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.cancel();
+                    }
                 });
 
-                dialog.show();
             }
         });
 
@@ -251,6 +293,26 @@ public class SettingActivity extends ActionBarActivity {
                 handler.sendMessage(msg);
             }
 
+        }
+
+    }
+
+    private void changeAlertDialogColor(AlertDialog dialog){
+        Field mAlert = null;
+        try {
+            mAlert = AlertDialog.class.getDeclaredField("mAlert");
+            mAlert.setAccessible(true);
+            Object alertController = mAlert.get(dialog);
+
+            Field mTitleView = alertController.getClass().getDeclaredField("mTitleView");
+            mTitleView.setAccessible(true);
+
+            TextView title = (TextView) mTitleView.get(alertController);
+            title.setTextColor(this.getResources().getColor(R.color.light_blue));
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
 
     }

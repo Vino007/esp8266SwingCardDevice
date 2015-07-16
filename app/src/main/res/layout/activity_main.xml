@@ -25,13 +25,20 @@
         android:id="@+id/readParameter_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="查看模块参数" />
+        android:text="查看模块参数"
+        android:textColor="@color/white"
+        android:background="@drawable/blue_btn"
+        />
 
     <Button
+        android:layout_marginTop="10dp"
         android:id="@+id/setting_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="设置参数" />
+        android:text="设置参数"
+        android:textColor="@color/white"
+        android:background="@drawable/blue_btn"
+        />
 
 
 </LinearLayout>

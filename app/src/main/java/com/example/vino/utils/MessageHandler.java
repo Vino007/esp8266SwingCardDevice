@@ -7,6 +7,7 @@ import java.util.List;
  * Created by Joker on 2015/5/14.
  */
 public class MessageHandler {
+    final static String[] modelDetails={"模式1:只刷卡,密码无效","模式2:只刷卡,密码无效,具有计次功能","模式3:刷卡,密码有效","模式4:刷卡,密码有效,卡片带时间限制"};
     /**
      * 初始化报文
      * @return
@@ -65,9 +66,21 @@ public class MessageHandler {
             endMinute=Integer.toHexString(msg.get(12));
 
         String model=Integer.toHexString(msg.get(13));
+
+        /**
+         * model显示具体信息还未测试
+         */
+        String modelDetail;
+        switch (model){
+            case "1":modelDetail= modelDetails[0];break;
+            case "2":modelDetail= modelDetails[1];break;
+            case "3":modelDetail= modelDetails[2];break;
+            case "4":modelDetail= modelDetails[3];break;
+            default:modelDetail="none";break;
+        }
         parameterContents[0]="20"+year+"年"+month+"月"+day+"日  "+hour+":"+minute;
         parameterContents[1]=startHour+":"+startMinute+"-"+endHour+":"+endMinute;
-        parameterContents[2]=model;
+        parameterContents[2]=modelDetail;
         if(msg.get(9)==0x00&&msg.get(10)==0x00&&msg.get(11)==0x00&&msg.get(12)==0x00)
             parameterContents[3]="开启";
         else
